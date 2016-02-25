@@ -16,13 +16,58 @@
 
 package servlet;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import model.Account;
 
 /**
  * Provides an Account Balance and Basic Withdrawal/Deposit Operations
  */
+  /**
+     *
+     * @param request
+     * @param response
+     */
 @WebServlet("/account")
 public class AccountServlet extends HttpServlet {
-    
+    private Account acc;
+
+    public AccountServlet() {
+        this.acc=new Account();
+        
+    }
+
+  
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response)  {
+   response.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);  
+    double balance=acc.getBalance();
+    }
+
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        PrintWriter p = response.getWriter();
+        if (request.getParameter("withdraw")!=null) 
+    {
+    acc.withdraw(Double.parseDouble(request.getParameter("withdraw")));
+
+    } else if(request.getParameter("deposit")!=null)
+{
+acc.deposit(Double.parseDouble(request.getParameter("deposit")));
+
+} else if ("true".equals(request.getParameter("close")))
+{
+acc.close();
+}
+else {
+p.println("invalid request");
+}
+doGet(request, response);
+}
 }
